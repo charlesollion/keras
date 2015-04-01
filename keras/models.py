@@ -61,12 +61,11 @@ class Sequential(object):
         y = standardize_y(y)
         index_array = np.arange(len(X))
         for epoch in range(nb_epoch):
-            if verbose:
-                print 'Epoch', epoch
             if shuffle:
                 np.random.shuffle(index_array)
             nb_batch = len(X)/batch_size+1
             progbar = Progbar(target=len(X))
+            loss = 0
             for batch_index in range(0, nb_batch):
                 batch = range(batch_index*batch_size, min(len(X), (batch_index+1)*batch_size))
                 if not batch:
@@ -76,6 +75,8 @@ class Sequential(object):
                 loss = self._train(X[batch], y[batch])
                 if verbose>1:
                     progbar.update(prog, [('loss', loss)])
+            if verbose:
+                print 'Epoch', epoch, 'loss', loss
             
     def predict_proba(self, X, batch_size=128):
         for batch_index in range(0, len(X)/batch_size+1):
