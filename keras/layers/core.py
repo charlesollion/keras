@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import theano
 import theano.tensor as T
+import numpy as np
 
-from .. import activations, initializations
-from ..utils.theano_utils import shared_zeros, floatX
-from ..utils.generic_utils import make_tuple
+from keras import activations, initializations
+from keras.utils.theano_utils import shared_zeros, floatX
+from keras.utils.generic_utils import make_tuple
 
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
 srng = RandomStreams()
@@ -163,3 +164,23 @@ class Embedding(Layer):
         X = self.get_input(train)
         return self.W[X]
 
+class OneHot(Layer):
+    '''
+        Turn a list of integers >=0 into a one-hot vector of fixed size. 
+        eg. [4, 50, 123, 26] -> [0.0, 0.0, 0.0, 1.0, ...]
+
+        @output_dim size of one hot representation = size of vocabulary (highest input integer + 1)
+    '''
+    def __init__(self, output_dim):
+        self.output_dim = output_dim
+
+        self.input = T.imatrix()
+        ws = np.zeros((self.output_dim, self.output_dim), dtype=theano.config.floatX)
+        for x in range(self.output_dim):
+            ws[x,x] = 1.0
+        self.W = theano.shared(ws)
+        self.params = []
+
+    def output(self, train):
+        X = self.get_input(train)
+        return self.W[X]

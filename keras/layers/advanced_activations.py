@@ -1,5 +1,5 @@
-from ..layers.core import Layer
-from ..utils.theano_utils import shared_zeros
+from keras.layers.core import Layer
+from keras.utils.theano_utils import shared_zeros
 
 class LeakyReLU(Layer):
     def __init__(self, alpha=0.3):

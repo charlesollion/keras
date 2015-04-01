@@ -74,7 +74,7 @@ class Sequential(object):
                 prog = batch[-1]+1
                 batch = index_array[batch]
                 loss = self._train(X[batch], y[batch])
-                if verbose:
+                if verbose>1:
                     progbar.update(prog, [('loss', loss)])
             
     def predict_proba(self, X, batch_size=128):
@@ -108,5 +108,3 @@ class Sequential(object):
             av_score += len(batch)*score
             samples += len(batch)
         return av_score/samples
-
-
