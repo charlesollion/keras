@@ -2,6 +2,8 @@ import theano
 import theano.tensor as T
 import numpy as np
 
+from utils.theano_utils import T_one_hot
+
 epsilon = 1.0e-15
 
 def mean_squared_error(y_true, y_pred):
@@ -22,6 +24,17 @@ def categorical_crossentropy(y_true, y_pred):
     y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
     # scale preds so that the class probas of each sample sum to 1
     y_pred /= y_pred.sum(axis=1, keepdims=True) 
+    return T.nnet.categorical_crossentropy(y_pred, y_true).mean()
+
+def categorical_scalar_crossentropy(y_true, y_pred):
+    '''y_pred: Expects a binary class matrix instead of a vector of scalar classes
+       y_true: Expects a vector of scalar classes. Will create a binary class matrix 
+    '''
+    y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
+    # scale preds so that the class probas of each sample sum to 1
+    y_pred /= y_pred.sum(axis=1, keepdims=True) 
+
+    y_true = T_one_hot(y_true, y_pred.shape[-1])
     return T.nnet.categorical_crossentropy(y_pred, y_true).mean()
 
 def binary_crossentropy(y_true, y_pred):

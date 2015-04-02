@@ -86,7 +86,9 @@ class Sequential(object):
             batch_preds = self._predict(X[batch])
 
             if batch_index == 0:
-                preds = np.zeros((len(X), batch_preds.shape[1]))
+                shape = batch_preds
+                shape[0] = len(X)
+                preds = np.zeros(shape)
             preds[batch] = batch_preds
         return preds
 
