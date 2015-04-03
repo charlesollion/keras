@@ -35,7 +35,7 @@ class Tokenizer(object):
         self.nb_words = nb_words
         self.document_count = 0
 
-    def fit_on_texts(self, texts):
+    def fit_on_texts(self, texts, unknown_words=False):
         '''
             required before using texts_to_sequences or texts_to_matrix
         '''
@@ -56,7 +56,14 @@ class Tokenizer(object):
         wcounts = self.word_counts.items()
         wcounts.sort(key = lambda x: x[1], reverse=True)
         sorted_voc = [wc[0] for wc in wcounts]
-        self.word_index = dict(zip(sorted_voc, range(len(sorted_voc))))
+        if unknown_words:
+            self.word_counts['UNK'] = sum([x[1] for x in wcounts[self.nb_words:]])
+            self.word_index = dict(zip(sorted_voc, range(1,len(sorted_voc)+1)))
+            # limit the vocabulary size
+            #self.word_index = dict(zip(sorted_voc[:self.nb_words-1], range(1,self.nb_words)))
+            self.word_index['UNK'] = 0 
+        else:
+            self.word_index = dict(zip(sorted_voc, range(len(sorted_voc))))
 
         self.index_docs = {}
         for w, c in self.word_docs.items():
@@ -79,7 +86,7 @@ class Tokenizer(object):
                     self.index_docs[i] += 1
 
 
-    def texts_to_sequences(self, texts):
+    def texts_to_sequences(self, texts, replace=None):
         '''
             Transform each text in texts in a sequence of integers.
             Only top "nb_words" most frequent words will be taken into account.
@@ -94,7 +101,8 @@ class Tokenizer(object):
                 i = self.word_index.get(w)
                 if i is not None:
                     if nb_words and i >= nb_words:
-                        pass
+                        if replace is not None:
+                            vect.append(0) # 0 is 'UNK'
                     else:
                         vect.append(i)
             res.append(vect)
