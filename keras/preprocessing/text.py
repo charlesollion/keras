@@ -58,10 +58,12 @@ class Tokenizer(object):
         sorted_voc = [wc[0] for wc in wcounts]
         if unknown_words:
             self.word_counts['UNK'] = sum([x[1] for x in wcounts[self.nb_words:]])
-            self.word_index = dict(zip(sorted_voc, range(1,len(sorted_voc)+1)))
+            self.word_index = dict(zip(sorted_voc, range(2,len(sorted_voc)+2)))
             # limit the vocabulary size
             #self.word_index = dict(zip(sorted_voc[:self.nb_words-1], range(1,self.nb_words)))
-            self.word_index['UNK'] = 0 
+            self.word_index['UNK'] = 1
+            # pad word / end_sequence word
+            self.word_index[' '] = 0
         else:
             self.word_index = dict(zip(sorted_voc, range(len(sorted_voc))))
 
