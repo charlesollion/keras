@@ -90,12 +90,14 @@ class Sequential(object):
                 y_batch = y[batch_ids]
                 loss = self._train(X_batch, y_batch)
                 
-                if verbose:
+                if verbose>1:
                     is_last_batch = (batch_index == nb_batch - 1)
                     if not is_last_batch or not do_validation:
                         progbar.update(batch_end, [('loss', loss)])
                     else:
                         progbar.update(batch_end, [('loss', loss), ('val. loss', self.test(X_val, y_val))])
+            if verbose:
+                print 'Epoch', epoch, 'loss', loss
             
     def predict_proba(self, X, batch_size=128):
         for batch_index in range(0, len(X)/batch_size+1):
