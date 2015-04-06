@@ -33,9 +33,10 @@ def categorical_scalar_crossentropy(y_true, y_pred):
     y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
     # scale preds so that the class probas of each sample sum to 1
     y_pred /= y_pred.sum(axis=1, keepdims=True) 
-
-    y_true = T_one_hot(y_true, y_pred.shape[-1])
-    return T.nnet.categorical_crossentropy(y_pred, y_true).mean()
+    #y_true = T_one_hot(y_true, y_pred.shape[-1])
+    y_pred_r = y_pred.reshape((y_pred.shape[0]*y_pred.shape[1], y_pred.shape[2]))
+    y_true = theano.tensor.cast(y_true.flatten(), 'int64')
+    return T.nnet.categorical_crossentropy(y_pred_r, y_true).sum()
 
 def binary_crossentropy(y_true, y_pred):
     y_pred = T.clip(y_pred, epsilon, 1.0 - epsilon)
