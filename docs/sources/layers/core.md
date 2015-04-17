@@ -77,6 +77,8 @@ Standard 1D fully-connect layer.
 
 - __Input shape__: 2D tensor with shape: `(nb_samples, input_dim)`.
 
+- __Output shape__: 2D tensor with shape: `(nb_samples, output_dim)`.
+
 - __Arguments__:
 
     - __input_dim__: int >= 0. 
@@ -84,6 +86,31 @@ Standard 1D fully-connect layer.
     - __init__: name of initialization function for the weights of the layer (see: [initializations](../initializations.md)), or alternatively, Theano function to use for weights initialization. This parameter is only relevant if you don't pass a `weights` argument.
     - __activation__: name of activation function to use (see: [activations](../activations.md)), or alternatively, elementwise Theano function. If you don't specify anything, no activation is applied (ie. "linear" activation: a(x) = x).
     - __weights__: list of numpy arrays to set as initial weights. The list should have 1 element, of shape `(input_dim, output_dim)`.
+
+---
+
+## TimeDistributedDense
+```python
+keras.layers.core.TimeDistributedDense(input_dim, output_dim, init='uniform', activation='linear', weights=None)
+```
+
+Fully-connected layer distributed over the time dimension. Useful after a recurrent network set to `return_sequences=True`.
+
+- __Input shape__: 3D tensor with shape: `(nb_samples, nb_timesteps, input_dim)`.
+
+- __Arguments__:
+    - __input_dim__: int >= 0. 
+    - __output_dim__: int >= 0. 
+    - __init__: name of initialization function for the weights of the layer (see: [initializations](../initializations.md)), or alternatively, Theano function to use for weights initialization. This parameter is only relevant if you don't pass a `weights` argument.
+    - __activation__: name of activation function to use (see: [activations](../activations.md)), or alternatively, elementwise Theano function. If you don't specify anything, no activation is applied (ie. "linear" activation: a(x) = x).
+    - __weights__: list of numpy arrays to set as initial weights. The list should have 1 element, of shape `(input_dim, output_dim)`.
+
+- __Example__:
+```python
+# input shape: (nb_samples, nb_timesteps, 10)
+model.add(LSTM(10, 5, return_sequences=True)) # output shape: (nb_samples, nb_timesteps, 5)
+model.add(TimeDistributedDense(5, 10)) # output shape: (nb_samples, nb_timesteps, 10)
+```
 
 
 ---
@@ -95,6 +122,8 @@ keras.layers.core.Activation(activation)
 Apply an activation function to the input. 
 
 - __Input shape__: This layer does not assume a specific input shape. As a result, it cannot be used as the first layer in a model.
+
+- __Output shape__: Same as input.
 
 - __Arguments__:
 
@@ -111,6 +140,8 @@ Apply dropout to the input. Dropout consists in randomly setting a fraction `p` 
 
 - __Input shape__: This layer does not assume a specific input shape. As a result, it cannot be used as the first layer in a model.
 
+- __Output shape__: Same as input.
+
 - __Arguments__:
 
     - __p__: float (0 <= p < 1). Fraction of the input that gets dropped out at training time. 
@@ -126,6 +157,8 @@ keras.layers.core.Reshape(*dims)
 Reshape the input to a new shape containing the same number of units. 
 
 - __Input shape__: This layer does not assume a specific input shape. As a result, it cannot be used as the first layer in a model.
+
+- __Output shape__: `(nb_samples, *dims)`.
 
 - __Arguments__:
 
@@ -149,6 +182,8 @@ Convert a nD input to 1D.
 
 - __Input shape__: (nb_samples, *). This layer cannot be used as the first layer in a model.
 
+- __Output shape__: `(nb_samples, nb_input_units)`.
+
 ---
 
 ## RepeatVector
@@ -160,6 +195,8 @@ Repeat the 1D input n times. Dimensions of input are assumed to be (nb_samples, 
 
 - __Input shape__: This layer does not assume a specific input shape. As a result, it cannot be used as the first layer in a model.
 
+- __Output shape__: `(nb_samples, n, input_dims)`.
+
 - __Arguments__:
     - __n__: int. 
 
@@ -168,6 +205,6 @@ Repeat the 1D input n times. Dimensions of input are assumed to be (nb_samples, 
 ```python
 # input shape: (nb_samples, 10)
 model.add(Dense(10, 100)) # output shape: (nb_samples, 100)
-model.add(Repeat(2))  # output shape: (nb_samples, 2, 10)
+model.add(RepeatVector(2))  # output shape: (nb_samples, 2, 10)
 ```
 

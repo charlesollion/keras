@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import theano
 import theano.tensor as T
 import numpy as np
@@ -8,6 +10,7 @@ from keras.utils.theano_utils import shared_zeros, floatX
 from keras.utils.generic_utils import make_tuple
 
 from theano.sandbox.rng_mrg import MRG_RandomStreams as RandomStreams
+from six.moves import zip
 srng = RandomStreams()
 
 class Layer(object):
@@ -139,7 +142,7 @@ class Dense(Layer):
         output = self.activation(T.dot(X, self.W) + self.b)
         return output
 
-class SharedDense(Layer):
+class TimeDistributedDense(Layer):
     '''
        Apply a same DenseLayer for each dimension[1] (shared_dimension) input 
        Especially useful after a recurrent network with 'return_sequence=True'
@@ -153,7 +156,7 @@ class SharedDense(Layer):
         self.input_dim = input_dim
         self.output_dim = output_dim
 
-        self.input = T.matrix()
+        self.input = T.tensor3()
         self.W = self.init((self.input_dim, self.output_dim))
         self.b = shared_zeros((self.output_dim))
 
@@ -173,29 +176,6 @@ class SharedDense(Layer):
                                 outputs_info=None)
         return output.dimshuffle(1,0,2)
 
-class Embedding(Layer):
-    '''
-        Turn a list of integers >=0 into a dense vector of fixed size. 
-        eg. [4, 50, 123, 26] -> [0.25, 0.1]
-
-        @input_dim: size of vocabulary (highest input integer + 1)
-        @out_dim: size of dense representation
-    '''
-    def __init__(self, input_dim, output_dim, init='uniform', weights=None):
-        self.init = initializations.get(init)
-        self.input_dim = input_dim
-        self.output_dim = output_dim
-
-        self.input = T.imatrix()
-        self.W = self.init((self.input_dim, self.output_dim))
-        self.params = [self.W]
-
-        if weights is not None:
-            self.set_weights(weights)
-
-    def output(self, train):
-        X = self.get_input(train)
-        return self.W[X]
 
 class OneHot(Layer):
     '''

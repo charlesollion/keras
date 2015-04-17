@@ -1,4 +1,3 @@
-# Optimizers
 
 ## Usage of optimizers
 
@@ -28,7 +27,6 @@ model.compile(loss='mean_squared_error', optimizer='sgd')
 ```python
 keras.optimizers.Optimizer(**kwargs)
 ```
-[[source](https://github.com/fchollet/keras/blob/master/keras/optimizers.py)]
 
 All optimizers descended from this class support the following keyword arguments:
 
@@ -46,7 +44,6 @@ Note: this is base class for building optimizers, not an actual optimizer that c
 ```python
 keras.optimizers.SGD(lr=0.01, momentum=0., decay=0., nesterov=False)
 ``` 
-[[source](https://github.com/fchollet/keras/blob/master/keras/optimizers.py)]
 
 __Arguments__:
 
@@ -62,7 +59,6 @@ __Arguments__:
 ```python
 keras.optimizers.Adagrad(lr=0.01, epsilon=1e-6)
 ```
-[[source](https://github.com/fchollet/keras/blob/master/keras/optimizers.py)]
 
 It is recommended to leave the parameters of this optimizer at their default values.
 
@@ -78,7 +74,6 @@ __Arguments__:
 ```python
 keras.optimizers.Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
 ```
-[[source](https://github.com/fchollet/keras/blob/master/keras/optimizers.py)]
 
 It is recommended to leave the parameters of this optimizer at their default values.
 
@@ -92,12 +87,11 @@ For more info, see *"Adadelta: an adaptive learning rate method"* by Matthew Zei
 
 ---
 
-##  RMSprop
+##  RMSprop 
 
 ```python
 keras.optimizers.RMSprop(lr=0.001, rho=0.9, epsilon=1e-6)
 ```
-[[source](https://github.com/fchollet/keras/blob/master/keras/optimizers.py)]
 
 It is recommended to leave the parameters of this optimizer at their default values.
 
@@ -106,3 +100,22 @@ __Arguments__:
 - __lr__: float >= 0. Learning rate. 
 - __rho__: float >= 0.
 - __epsilon__: float >= 0. Fuzz factor.
+
+---
+
+## Adam
+
+```python
+keras.optimizers.Adam(lr=0.001, beta_1=0.9, beta_2=0.999, epsilon=1e-8, kappa=1-1e-8)
+```
+
+Adam optimizer, proposed by Kingma and Lei Ba in [Adam: A Method For Stochastic Optimization](http://arxiv.org/pdf/1412.6980v4.pdf). Default parameters are those suggested in the paper. The parameter "lambda" from the paper has been renamed kappa, for syntactic reasons.
+
+__Arguments__:
+
+- __lr__: float >= 0. Learning rate. 
+- __beta_1__, __beta_2__: floats, 0 < beta < 1. Generally close to 1.
+- __epsilon__: float >= 0. Fuzz factor.
+- __kappa__: float 0 < kappa < 1. Lambda parameter in the original paper.
+
+---

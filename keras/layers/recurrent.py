@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
 import theano
 import theano.tensor as T
 import numpy as np
 
-from keras import activations, initializations
-from keras.utils.theano_utils import shared_zeros, alloc_zeros_matrix
-from keras.layers.core import Layer
+from .. import activations, initializations
+from ..utils.theano_utils import shared_zeros, alloc_zeros_matrix
+from ..layers.core import Layer
+from six.moves import range
 
 class SimpleRNN(Layer):
     '''

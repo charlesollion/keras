@@ -3,9 +3,12 @@
     These preprocessing utils would greatly benefit
     from a fast Cython rewrite.
 '''
+from __future__ import absolute_import
 
 import string
 import numpy as np
+from six.moves import range
+from six.moves import zip
 
 def base_filter():
     f = string.punctuation
@@ -20,19 +23,20 @@ def text_to_word_sequence(text, filters=base_filter(), lower=True, split=" "):
         text = text.lower()
     text = text.translate(string.maketrans(filters, split*len(filters)))
     seq = text.split(split)
-    return filter(None, seq)
+    return [_f for _f in seq if _f]
 
 
-def one_hot(text, n):
+def one_hot(text, n, filters=base_filter(), lower=True, split=" "):
     seq = text_to_word_sequence(text)
-    return [abs(hash(w))%n for w in seq]
+    return [(abs(hash(w))%(n-1)+1) for w in seq]
 
 
 class Tokenizer(object):
-    def __init__(self, filters=base_filter(), lower=True, nb_words=None):
+    def __init__(self, nb_words=None, filters=base_filter(), lower=True, split=" "):
         self.word_counts = {}
         self.word_docs = {}
         self.filters = filters
+        self.split = split
         self.lower = lower
         self.nb_words = nb_words
         self.document_count = 0
@@ -45,7 +49,7 @@ class Tokenizer(object):
         self.document_count = 0
         for text in texts:
             self.document_count += 1
-            seq = text_to_word_sequence(text, self.filters, self.lower)
+            seq = text_to_word_sequence(text, self.filters, self.lower, self.split)
             for w in seq:
                 if w in self.word_counts:
                     self.word_counts[w] += 1
@@ -57,7 +61,7 @@ class Tokenizer(object):
                 else:
                     self.word_docs[w] = 1
 
-        wcounts = self.word_counts.items()
+        wcounts = list(self.word_counts.items())
         wcounts.sort(key = lambda x: x[1], reverse=True)
         sorted_voc = [wc[0] for wc in wcounts]
         if unknown_words:
@@ -69,10 +73,10 @@ class Tokenizer(object):
             # pad word / end_sequence word
             self.word_index[' '] = 0
         else:
-            self.word_index = dict(zip(sorted_voc, range(1, len(sorted_voc)+1)))
+            self.word_index = dict(list(zip(sorted_voc, list(range(1, len(sorted_voc)+1)))))
 
         self.index_docs = {}
-        for w, c in self.word_docs.items():
+        for w, c in list(self.word_docs.items()):
             self.index_docs[self.word_index[w]] = c
 
 
@@ -115,7 +119,7 @@ class Tokenizer(object):
         '''
         nb_words = self.nb_words
         for text in texts:
-            seq = text_to_word_sequence(text, self.filters, self.lower)
+            seq = text_to_word_sequence(text, self.filters, self.lower, self.split)
             vect = []
             for w in seq:
                 i = self.word_index.get(w)
@@ -162,7 +166,7 @@ class Tokenizer(object):
                     counts[j] = 1.
                 else:
                     counts[j] += 1
-            for j, c in counts.items():
+            for j, c in list(counts.items()):
                 if mode == "count":
                     X[i][j] = c
                 elif mode == "freq":
